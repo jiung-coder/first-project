@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang='ko'>
+<head>
+<meta charset='UTF-8'>
+<title>보고서 챕터</title>
+<style>
+  body {{ font-family: Arial, sans-serif; padding: 1rem; }}
+  .search {{ margin-bottom: 1rem; }}
+  .card {{ border: 1px solid #ddd; border-radius: 4px; padding: 0.8rem; margin: 0.5rem 0; }}
+  .card h3 {{ margin: 0 0 0.3rem 0; }}
+</style>
+</head>
+<body>
+  <div class='search'>
+    <input type='text' id='filter' placeholder='제목·본문 검색' style='width:100%; padding:0.4rem;' />
+  </div>
+  <div id='cards'></div>
+<script>
+  const dataUrl = 'data.json';
+  const cardsDiv = document.getElementById('cards');
+  const filterInput = document.getElementById('filter');
+  fetch(dataUrl)
+    .then(r => r.json())
+    .then(data => {{
+        window.chapters = data;
+        render(data);
+    }});
+  function render(items) {{
+    cardsDiv.innerHTML = '';
+    items.forEach(ch => {{
+      const div = document.createElement('div');
+      div.className = 'card';
+      const title = document.createElement('h3');
+      title.textContent = `제${ch['장']}: ${ch['제목']}`;
+      const summary = document.createElement('p');
+      // simple summary: first 120 chars of 본문 without line breaks
+      const txt = ch['본문'].replace(/
++/g, ' ').trim();
+      summary.textContent = txt.length > 120 ? txt.slice(0,120) + '…' : txt;
+      div.appendChild(title);
+      div.appendChild(summary);
+      cardsDiv.appendChild(div);
+    }});
+  }}
+  filterInput.addEventListener('input', () => {{
+    const kw = filterInput.value.trim().toLowerCase();
+    const filtered = kw ? window.chapters.filter(ch =>
+        ch['제목'].toLowerCase().includes(kw) || ch['본문'].toLowerCase().includes(kw)
+    ) : window.chapters;
+    render(filtered);
+  }});
+</script>
+</body>
+</html>
