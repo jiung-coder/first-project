@@ -1,116 +1,35 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>2026 안전점검 보고서 (가상)</title>
-<style>
-  :root { --fg:#1f2328; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb; --bg:#f7f8fa; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: system-ui, -apple-system, "Malgun Gothic", sans-serif; color:var(--fg); background:var(--bg); line-height:1.6; }
-  header, main { max-width: 880px; margin: 0 auto; padding: 24px 16px; }
-  h1 { font-size: 1.5rem; margin: 0 0 4px; }
-  .sub { color: var(--muted); margin: 0; font-size: .9rem; }
-  .filter { display:flex; gap:8px; margin: 16px 0; }
-  .filter input { flex:1; padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-size:1rem; }
-  .count { color: var(--muted); font-size: .9rem; margin-bottom: 12px; }
-  .grid { display:grid; gap:12px; }
-  .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
-  .card .chap { font-size:.8rem; color:var(--accent); font-weight:600; }
-  .card h2 { font-size:1.1rem; margin: 2px 0 6px; }
-  .card p { margin:0; color:#374151; }
-  .empty { color: var(--muted); text-align:center; padding: 24px 0; }
-  section.embed { margin-top: 32px; }
-  .table-wrap { overflow-x:auto; background:#fff; border:1px solid var(--line); border-radius:12px; }
-  table { width:100%; border-collapse:collapse; font-size:.9rem; }
-  th, td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
-  th { background:#f3f4f6; font-weight:600; }
-  td.bad { color:#b91c1c; font-weight:600; }
-  td.warn { color:#b45309; }
-  td.ok { color:#15803d; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3개 부처 보도자료 검색</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<header>
-  <h1>2026 행정안전부 안전점검 결과 보고서 (가상)</h1>
-  <p class="sub">장 단위 요약 카드 · 제목/본문 검색</p>
-</header>
-<main>
-  <div class="filter">
-    <input id="q" type="search" placeholder="제목 또는 본문 키워드 입력 (예: 예산, 시정)" autocomplete="off">
-  </div>
-  <div id="count" class="count"></div>
-  <div id="list" class="grid"></div>
+  <header class="site-header">
+    <h1>3개 부처 보도자료</h1>
+    <p class="sub">2026-05-25 호우 대응 · 행정안전부 · 기상청 · 경찰청</p>
+  </header>
 
-  <section class="embed">
-    <h2 style="font-size:1.1rem">정합성 매트릭스</h2>
-    <!-- Google Sheets 게시 후 "파일 > 웹에 게시 > 임베드"에서 받은 iframe 코드로 교체 가능 -->
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>항목</th><th>장데이터.json</th><th>원문 보고서(.md)</th><th>판정</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>지적사항 건수</td><td>1장 120건 / 2장 115건</td><td>1절 120건 / 2절 115건</td><td class="bad">불일치</td></tr>
-          <tr><td>예산 집행률</td><td>1장 92% / 3장 90%</td><td>1절 92% / 3절 90%</td><td class="bad">불일치</td></tr>
-          <tr><td>총괄책임자 성명</td><td>1·3장 권혁수 / 5장 권혁주</td><td>1·3절 권혁수</td><td class="bad">5장 오기 의심</td></tr>
-          <tr><td>총 점검 건수</td><td>450건 (전 장 일치)</td><td>450건</td><td class="ok">일치</td></tr>
-          <tr><td>시정 완료율</td><td>85% (1·2장) / 82% (4장, 일부 지자체)</td><td>동일</td><td class="warn">4장은 지자체 한정 수치로 구분 필요</td></tr>
-          <tr><td>하반기 추가 점검</td><td>440건</td><td>440건</td><td class="ok">일치 (목표치)</td></tr>
-          <tr><td>문서 성격</td><td>제목에 "(가상)" 표기</td><td>동일</td><td class="warn">실제 자료가 아님을 명시</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-</main>
+  <main>
+    <section class="search-box">
+      <input id="keyword" type="search" placeholder="부처 또는 본문 키워드 (예: 1,820명, 기상청, 중대본)" autocomplete="off" />
+      <p id="result-count" class="result-count" aria-live="polite"></p>
+    </section>
 
-<script>
-  const listEl = document.getElementById('list');
-  const countEl = document.getElementById('count');
-  const qEl = document.getElementById('q');
-  let chapters = [];
+    <section id="cards" class="cards" aria-label="보도자료 목록"></section>
 
-  const plain = s => s.replace(/\*\*/g, '');
-  const summary = s => {
-    const t = plain(s).replace(/\s+/g, ' ').trim();
-    return t.length > 120 ? t.slice(0, 120) + '…' : t;
-  };
+    <section class="video-section">
+      <h2>관련 영상</h2>
+      <div id="video-area"></div>
+    </section>
+  </main>
 
-  function render() {
-    const kw = qEl.value.trim().toLowerCase();
-    const hits = chapters.filter(c =>
-      !kw || c.제목.toLowerCase().includes(kw) || c.본문.toLowerCase().includes(kw)
-    );
-    countEl.textContent = `결과 ${hits.length}건`;
-    listEl.replaceChildren();
-    if (!hits.length) {
-      const d = document.createElement('div');
-      d.className = 'empty';
-      d.textContent = '검색 결과가 없습니다.';
-      listEl.append(d);
-      return;
-    }
-    for (const c of hits) {
-      const card = document.createElement('article');
-      card.className = 'card';
-      const chap = document.createElement('div');
-      chap.className = 'chap';
-      chap.textContent = `제${c.장}장`;
-      const h = document.createElement('h2');
-      h.textContent = c.제목;
-      const p = document.createElement('p');
-      p.textContent = summary(c.본문);
-      card.append(chap, h, p);
-      listEl.append(card);
-    }
-  }
+  <footer class="site-footer">
+    <p>본 페이지의 보도자료 내용은 예시 데이터입니다.</p>
+  </footer>
 
-  fetch('장데이터.json')
-    .then(r => r.json())
-    .then(data => { chapters = data; render(); })
-    .catch(() => { countEl.textContent = '데이터를 불러오지 못했습니다. 장데이터.json 위치를 확인하세요.'; });
-
-  qEl.addEventListener('input', render);
-</script>
+  <script src="app.js"></script>
 </body>
 </html>
