@@ -21,7 +21,13 @@
   .card p { margin:0; color:#374151; }
   .empty { color: var(--muted); text-align:center; padding: 24px 0; }
   section.embed { margin-top: 32px; }
-  section.embed iframe { width:100%; height:480px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+  .table-wrap { overflow-x:auto; background:#fff; border:1px solid var(--line); border-radius:12px; }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; }
+  th, td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+  th { background:#f3f4f6; font-weight:600; }
+  td.bad { color:#b91c1c; font-weight:600; }
+  td.warn { color:#b45309; }
+  td.ok { color:#15803d; }
 </style>
 </head>
 <body>
@@ -38,8 +44,23 @@
 
   <section class="embed">
     <h2 style="font-size:1.1rem">정합성 매트릭스</h2>
-    <!-- Google Sheets 게시 후 "파일 > 웹에 게시 > 임베드"에서 받은 iframe 코드로 교체 -->
-    <iframe src="about:blank" title="정합성 매트릭스 (Google Sheets 임베드 예정)"></iframe>
+    <!-- Google Sheets 게시 후 "파일 > 웹에 게시 > 임베드"에서 받은 iframe 코드로 교체 가능 -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>항목</th><th>장데이터.json</th><th>원문 보고서(.md)</th><th>판정</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>지적사항 건수</td><td>1장 120건 / 2장 115건</td><td>1절 120건 / 2절 115건</td><td class="bad">불일치</td></tr>
+          <tr><td>예산 집행률</td><td>1장 92% / 3장 90%</td><td>1절 92% / 3절 90%</td><td class="bad">불일치</td></tr>
+          <tr><td>총괄책임자 성명</td><td>1·3장 권혁수 / 5장 권혁주</td><td>1·3절 권혁수</td><td class="bad">5장 오기 의심</td></tr>
+          <tr><td>총 점검 건수</td><td>450건 (전 장 일치)</td><td>450건</td><td class="ok">일치</td></tr>
+          <tr><td>시정 완료율</td><td>85% (1·2장) / 82% (4장, 일부 지자체)</td><td>동일</td><td class="warn">4장은 지자체 한정 수치로 구분 필요</td></tr>
+          <tr><td>하반기 추가 점검</td><td>440건</td><td>440건</td><td class="ok">일치 (목표치)</td></tr>
+          <tr><td>문서 성격</td><td>제목에 "(가상)" 표기</td><td>동일</td><td class="warn">실제 자료가 아님을 명시</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 </main>
 
